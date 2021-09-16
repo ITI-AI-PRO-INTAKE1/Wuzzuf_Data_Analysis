@@ -26,8 +26,9 @@ DataSet:
 Wuzzuf jobs in Egypt data set at Kaggle
 https://www.kaggle.com/omarhanyy/wuzzuf-jobs
 
-The project was implemented using Java and included the following libraries:
+The project was implemented using Java and included the following:
 * Apache Spark
 * XChart
+* Spring
 
-The project was deployed as a web service.
+The project was deployed as a web service using the spring server.
