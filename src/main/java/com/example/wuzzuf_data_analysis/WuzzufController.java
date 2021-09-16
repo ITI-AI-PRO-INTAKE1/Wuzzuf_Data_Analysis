@@ -58,8 +58,8 @@ public class WuzzufController {
     }
 
     @RequestMapping(value = "/mostPopJobs")
-    public void mostPopJobs()  {
-
+    public List<String> mostPopJobs()  {
+        return service.mostPopJobs();
     }
 
     @RequestMapping(value = "/mostPopJobsChart", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
@@ -69,8 +69,8 @@ public class WuzzufController {
     }
 
     @RequestMapping(value = "/mostPopAreas")
-    public void mostPopAreas()  {
-
+    public List<String> mostPopAreas()  {
+        return service.mostPopArea();
     }
 
     @RequestMapping(value = "/mostPopAreasChart", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
