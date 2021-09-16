@@ -47,8 +47,8 @@ public class WuzzufController {
     }
 
     @RequestMapping(value = "/demandCompany")
-    public void demandingCompanies() throws IOException {
-
+    public List<String> demandingCompanies() throws IOException {
+        return service.DemandingCompanies();
     }
 
     @RequestMapping(value = "/demandCompanyChart", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
@@ -80,8 +80,8 @@ public class WuzzufController {
     }
 
     @RequestMapping(value="/orderSkills")
-    public void orderSkills(){
-
+    public List<Map.Entry> orderSkills(){
+        return service.getSkills();
     }
 
 
