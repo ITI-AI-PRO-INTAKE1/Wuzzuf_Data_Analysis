@@ -31,4 +31,4 @@ The project was implemented using Java and included the following:
 * XChart
 * Spring
 
-The project was deployed as a web service using the spring server.
+The project was deployed as a web service.
