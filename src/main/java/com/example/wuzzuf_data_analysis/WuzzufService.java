@@ -126,12 +126,31 @@ public class WuzzufService {
         return companyJobsData.limit(20).toJSON().collectAsList();
     }
 
-    public void mostPopJobs(){
+    public List<String> mostPopJobs(){
+        data=checkData().dropDuplicates().na().drop();
+        data.createOrReplaceTempView("Wuzzuf_Jobs");
+        final Dataset<Row> most_pop_jobs = sparkSession.sql("SELECT cast(Title as string) Title, cast(COUNT(*) as int) MostPopularJobTitles FROM Wuzzuf_Jobs GROUP BY Title ORDER BY MostPopularJobTitles DESC");
+        List<Row> listOfPopJobs = most_pop_jobs.takeAsList(10); //(int) most_pop_jobs.count()
+        // store indices of the list in another two lists
+        String[] titles = listOfPopJobs.stream().map(s -> s.get(0)).collect(Collectors.toList()).toArray(String[]::new);
+        Integer[] titles_count = listOfPopJobs.stream().map(s -> s.get(1)).collect(Collectors.toList()).toArray(Integer[]::new);
+        getBarChart("Most-Popular-Job-Titles", "Job Title", "Number of Demand", titles, titles_count);
+        return most_pop_jobs.limit(20).toJSON().collectAsList();
 
     }
 
-    public void mostPopArea(){
+    public List<String> mostPopArea(){
+        data=checkData().dropDuplicates().na().drop();
+        data.createOrReplaceTempView("Wuzzuf_Jobs");
+        final Dataset<Row> most_pop_locs = sparkSession.sql(" SELECT cast(Location as string) Location, cast(COUNT(*) as int) MostPopularAreas FROM Wuzzuf_Jobs GROUP BY Location ORDER BY MostPopularAreas DESC");
+        List<Row> listOfPopAreas = most_pop_locs.takeAsList(10); //(int) most_pop_locs.count()
+        // store indices of the list in another two lists
+        String[] areas = listOfPopAreas.stream().map(s -> s.get(0)).collect(Collectors.toList()).toArray(String[]::new);
+        Integer[] areas_count = listOfPopAreas.stream().map(s -> s.get(1)).collect(Collectors.toList()).toArray(Integer[]::new);
 
+        getBarChart("Most-Popular-Areas", "Location", "Number of Demand", areas, areas_count);
+
+        return most_pop_locs.limit(20).toJSON().collectAsList();
 
     }
 
@@ -163,7 +182,41 @@ public class WuzzufService {
 
     private void getBarChart(String title, String x_axis, String y_axis, String[] x_col, Integer[] y_col) {
 
+        // Create Chart
+        CategoryChart chart = new CategoryChartBuilder().width(800).height(600).title(title).theme(ChartTheme.GGPlot2).xAxisTitle(x_axis).yAxisTitle(y_axis).build();
+        
+        // setting color palette
+        Color[] seriesColors = new Color[]{
+            new Color (204, 77, 88), 
+            new Color (111, 46, 67),
+            new Color (243, 101, 35),
+            new Color (245, 149, 29),
+            new Color (249, 194, 50),
+            new Color (111, 156, 51),
+            new Color (43, 138, 134),
+            new Color (73, 114, 136),
+            new Color (22, 87, 141),
+            new Color (95, 77, 153)};
+        
+        // Customize Chart
+        chart.getStyler().setLegendPosition(LegendPosition.InsideNE);
+        chart.getStyler().setHasAnnotations(true);
+        chart.getStyler().setAnnotationsFontColor(Color.WHITE);
+        chart.getStyler().setXAxisLabelRotation(45);
+        Font bold = Font.decode("BOLD");
+        chart.getStyler().setAnnotationsFont(bold);
+        chart.getStyler().setStacked (true);
+        chart.getStyler().setSeriesColors(seriesColors);
 
+        // Series
+        chart.addSeries(x_axis, Arrays.asList(x_col), Arrays.asList(y_col));
+
+
+        try {
+            BitmapEncoder.saveBitmap(chart, "src/main/resources/charts/"+title+".png", BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
